@@ -19,7 +19,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     let dispatchGroup = DispatchGroup()
-
+    
+    let semaphore = DispatchSemaphore(value: 1)
+    
     let websiteName = ["name", "address", "head"]
     
     var onlineData = [String]()
@@ -27,24 +29,29 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        getData()
+        getData { (result) in
+            
+            self.dispatchGroup.notify(queue: .main) {
+                
+                self.onlineData.append(result)
+                self.tableView.reloadData()
 
+                self.semaphore.wait()
+                
+            }
+
+        }
+        
         tableView.delegate = self
         tableView.dataSource = self
         
-        dispatchGroup.notify(queue: .main) {
-            
-            self.tableView.reloadData()
-            
-        }
-
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    func getData() {
+    func getData(completionHandler completion: @escaping (String) -> Void) {
         
         for address in websiteName {
             
@@ -53,11 +60,12 @@ class ViewController: UIViewController {
             let urlRequest = URLRequest(url: url)
             
             dispatchGroup.enter()
+            
+            semaphore.signal()
 
             let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
                 
-                DispatchQueue.main.async {
-                    
+
                     guard error == nil else { return print("error is not nil") }
                     
                     guard let data = data  else { return print("data error") }
@@ -69,16 +77,19 @@ class ViewController: UIViewController {
                     case 200 ... 299:
                         
                         let result = String(decoding: data, as: UTF8.self)
-                        self.onlineData.append(result)
+                        
+                        completion(result)
                         
                     default:
                         print("errorCode: \(response.statusCode)")
                     }
+                    self.semaphore.signal()
                     self.dispatchGroup.leave()
-                }
+
             }
-            
+            self.semaphore.wait()
             dataTask.resume()
+
         }
         
     }
@@ -98,9 +109,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
        
-            
             cell.textLbl.text = self.onlineData[indexPath.row]
             cell.textLbl.isHidden = false
+            semaphore.signal()
         
         return cell
     }
