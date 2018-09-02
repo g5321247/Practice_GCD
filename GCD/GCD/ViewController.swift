@@ -31,14 +31,16 @@ class ViewController: UIViewController {
         
         getData { (result) in
             
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3, execute: {
+
             self.dispatchGroup.notify(queue: .main) {
-                
+               
                 self.onlineData.append(result)
+                
                 self.tableView.reloadData()
 
-                self.semaphore.wait()
-                
-            }
+                }
+            })
 
         }
         
@@ -61,30 +63,28 @@ class ViewController: UIViewController {
             
             dispatchGroup.enter()
             
-            semaphore.signal()
-
             let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
                 
-
-                    guard error == nil else { return print("error is not nil") }
+                guard error == nil else { return print("error is not nil") }
                     
-                    guard let data = data  else { return print("data error") }
+                guard let data = data  else { return print("data error") }
                     
-                    guard let response = response as? HTTPURLResponse else { return print("data error") }
+                guard let response = response as? HTTPURLResponse else { return print("data error") }
                     
-                    switch response.statusCode {
+                switch response.statusCode {
                         
-                    case 200 ... 299:
+                case 200 ... 299:
                         
-                        let result = String(decoding: data, as: UTF8.self)
+                    let result = String(decoding: data, as: UTF8.self)
                         
-                        completion(result)
-                        
-                    default:
-                        print("errorCode: \(response.statusCode)")
-                    }
+                    completion(result)
                     self.semaphore.signal()
-                    self.dispatchGroup.leave()
+
+                default:
+                    print("errorCode: \(response.statusCode)")
+                }
+                
+                self.dispatchGroup.leave()
 
             }
             self.semaphore.wait()
