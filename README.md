@@ -20,7 +20,7 @@ Fetch Data from the Internet and display it by order
 
 ### 1. Group
 
-Declare the variable -  dispatchGroup and  implement dispatchGroup enter and leave in completion handler, to make sure all data will settle down before reloading it.
+Declare the variable -  dispatchGroup and  implement dispatchGroup enter and leave in completion handler, to make sure all data will settle down before reloading.
 
 ``` swift
 let dispatchGroup = DispatchGroup()
