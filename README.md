@@ -9,7 +9,7 @@ GCD is a thread control tool written in Swift.
 
 +   **Fetch**
 
-    Fetch Data from the Internet and display it by order   
+Fetch Data from the Internet and display it by order   
 
 ## Method 
 
@@ -29,13 +29,13 @@ dispatchGroup.enter()
 
 let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 
-......
+  ......
 
-guard let response = response as? HTTPURLResponse else {               
+  guard let response = response as? HTTPURLResponse else {               
 
-......
+  ......
 
-self.dispatchGroup.leave()
+  self.dispatchGroup.leave()
 
 }
 
@@ -47,9 +47,9 @@ It will notify us once all the process finished.
 ``` swift
 self.dispatchGroup.notify(queue: .main){
 
-self.onlineData.append(result)
+  self.onlineData.append(result)
 
-self.tableView.reloadData()
+  self.tableView.reloadData()
 
 }
 
@@ -58,19 +58,18 @@ self.tableView.reloadData()
 
 ### 2. Semaphore
 
-<!--Use Notification to post data from SecondViewController 
+Use the semaphore to control the task sequence. Set the wait semaphore before the task function called. The semaphore will only give the green light in the completion handler while the process completed. In this case, the task will proceed after the previous work done.
 
 ``` swift 
-NotificationCenter.default.post(name: .edit, object: inputTxtView.text)
-NotificationCenter.default.post(name: .add, object: inputTxtView.text)
+let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
+
+  ....
+  
+  self.semaphore.signal()
+
+}
+
+self.semaphore.wait()
+dataTask.resume()    
 
 ```
-
-Create observers receiving post
-
-``` swift
-NotificationCenter.default.addObserver(self, selector: #selector (getDataFrom(_:)), name: .edit, object: nil)
-NotificationCenter.default.addObserver(self, selector: #selector (getDataFrom(_:)), name: .add, object: nil)
-
-```
--->
