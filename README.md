@@ -20,7 +20,7 @@ GCD is a thread control tool written in Swift.
 
 ### 1. Group
 
-Declare the variable -  dispatchGroup and  implement dispatchGroup enter and leave in completion handler, to make sure all data will settle down before reloading it.
+Declare the variable -  dispatchGroup and  implement dispatchGroup enter and leave in completion handler, to make sure all data will settle down before reloading.
 
 ``` swift
 let dispatchGroup = DispatchGroup()
