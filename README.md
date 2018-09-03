@@ -9,7 +9,7 @@ GCD is a thread control tool written in Swift.
 
 +   **Fetch**
 
-Fetch Data from the Internet and display it by order   
+    Fetch Data from the Internet and display it by order   
 
 ## Method 
 
