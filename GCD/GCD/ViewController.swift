@@ -31,17 +31,13 @@ class ViewController: UIViewController {
         
         getData { (result) in
             
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3, execute: {
-
             self.dispatchGroup.notify(queue: .main) {
                
                 self.onlineData.append(result)
                 
                 self.tableView.reloadData()
 
-                }
-            })
-
+            }
         }
         
         tableView.delegate = self
@@ -78,16 +74,18 @@ class ViewController: UIViewController {
                     let result = String(decoding: data, as: UTF8.self)
                         
                     completion(result)
-                    self.semaphore.signal()
+//                    self.semaphore.signal()
 
                 default:
                     print("errorCode: \(response.statusCode)")
+                    
                 }
                 
                 self.dispatchGroup.leave()
 
             }
-            self.semaphore.wait()
+            
+//            self.semaphore.wait()
             dataTask.resume()
 
         }
