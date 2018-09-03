@@ -18,8 +18,6 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
-    let dispatchGroup = DispatchGroup()
-    
     let semaphore = DispatchSemaphore(value: 1)
     
     let websiteName = ["name", "address", "head"]
@@ -31,13 +29,11 @@ class ViewController: UIViewController {
         
         getData { (result) in
             
-            self.dispatchGroup.notify(queue: .main) {
-               
+            DispatchQueue.main.async {
                 self.onlineData.append(result)
-                
                 self.tableView.reloadData()
-
             }
+
         }
         
         tableView.delegate = self
@@ -57,8 +53,6 @@ class ViewController: UIViewController {
             
             let urlRequest = URLRequest(url: url)
             
-            dispatchGroup.enter()
-            
             let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
                 
                 guard error == nil else { return print("error is not nil") }
@@ -74,18 +68,17 @@ class ViewController: UIViewController {
                     let result = String(decoding: data, as: UTF8.self)
                         
                     completion(result)
-//                    self.semaphore.signal()
 
                 default:
                     print("errorCode: \(response.statusCode)")
                     
                 }
                 
-                self.dispatchGroup.leave()
+                self.semaphore.signal()
 
             }
             
-//            self.semaphore.wait()
+            self.semaphore.wait()
             dataTask.resume()
 
         }
