@@ -29,13 +29,13 @@ dispatchGroup.enter()
 
 let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 
-......
+  ......
 
-guard let response = response as? HTTPURLResponse else {               
+  guard let response = response as? HTTPURLResponse else {               
 
-......
+  ......
 
-self.dispatchGroup.leave()
+  self.dispatchGroup.leave()
 
 }
 
@@ -47,9 +47,9 @@ It will notify us once all the process finished.
 ``` swift
 self.dispatchGroup.notify(queue: .main){
 
-self.onlineData.append(result)
+  self.onlineData.append(result)
 
-self.tableView.reloadData()
+  self.tableView.reloadData()
 
 }
 
@@ -63,8 +63,8 @@ Use the semaphore to control the task sequence. Set the wait semaphore before th
 ``` swift 
 let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 
-....
-self.semaphore.signal()
+  ....
+  self.semaphore.signal()
 
 }
 
