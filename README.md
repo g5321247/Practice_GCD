@@ -64,6 +64,7 @@ Use the semaphore to control the task sequence. Set the wait semaphore before th
 let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
 
   ....
+  
   self.semaphore.signal()
 
 }
